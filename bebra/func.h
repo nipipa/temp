@@ -89,7 +89,7 @@ int del(char arr[ARR_MAX][ARR_MAX], int line, int ver)
             arr[ver2][i] = '0';
         }
     printf("Time of deleting: %ld mc\n", time_stop());
-    file_save(arr, line, ver);
+    select_motion(arr, line, ver);
     return 0;
 }
 
@@ -106,7 +106,7 @@ int file_save(char arr[ARR_MAX][ARR_MAX], int line, int ver)
         fputc('\n', file);
     }
     fclose(file);
-    select_motion(arr, line, ver);
+    exit(EXIT_SUCCESS);
     return 0;
 }
 
@@ -170,10 +170,10 @@ int select_motion(char arr[ARR_MAX][ARR_MAX], int line, int ver){
         draw_graph(arr, line, ver);
         break;
     case 0:
-        exit(EXIT_SUCCESS);
+        file_save(arr, line, ver);
         break;
     default:
-        exit(EXIT_FAILURE);
+        file_save(arr, line, ver);
         break;
     }
     return 0;
