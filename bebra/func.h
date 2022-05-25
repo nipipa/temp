@@ -3,8 +3,6 @@
 #include <time.h>
 #define ARR_MAX 1001
 
-struct timeval tv1, tv2, dtv;
-struct timezone tz;
 
 int select_motion();
 int print_reb();
@@ -12,23 +10,7 @@ int del();
 int file_save();
 int draw_graph();
 
-void time_start()
-{
-    mingw_gettimeofday(&tv1, &tz);
-}
 
-long time_stop()
-{
-    mingw_gettimeofday(&tv2, &tz);
-    dtv.tv_sec = tv2.tv_sec - tv1.tv_sec;
-    dtv.tv_usec = tv2.tv_usec - tv1.tv_usec;
-    if (dtv.tv_usec < 0)
-    {
-        dtv.tv_sec--;
-        dtv.tv_usec += 1000000;
-    }
-    return dtv.tv_sec * 1000 + dtv.tv_usec / 1000;
-}
 
 int print_reb(char arr[ARR_MAX][ARR_MAX], int line, int ver)
 {
@@ -81,14 +63,12 @@ int del(char arr[ARR_MAX][ARR_MAX], int line, int ver)
     puts("second:");
     scanf("%d", &ver2);
     getc(stdin);
-    time_start();
     for (int i = 0; i < ver; i++)
         if (arr[ver1][i] == '1' && arr[ver2][i] == '1')
         {
             arr[ver1][i] = '0';
             arr[ver2][i] = '0';
         }
-    printf("Time of deleting: %ld mc\n", time_stop());
     select_motion(arr, line, ver);
     return 0;
 }
