@@ -3,6 +3,8 @@
 #include <time.h>
 #define ARR_MAX 1001
 
+struct timeval tv1, tv2, dtv;
+struct timezone tz;
 
 int select_motion();
 int print_reb();
@@ -10,7 +12,23 @@ int del();
 int file_save();
 int draw_graph();
 
+void time_start()
+{
+    mingw_gettimeofday(&tv1, &tz);
+}
 
+long time_stop()
+{
+    mingw_gettimeofday(&tv2, &tz);
+    dtv.tv_sec = tv2.tv_sec - tv1.tv_sec;
+    dtv.tv_usec = tv2.tv_usec - tv1.tv_usec;
+    if (dtv.tv_usec < 0)
+    {
+        dtv.tv_sec--;
+        dtv.tv_usec += 1000000;
+    }
+    return dtv.tv_sec * 1000 + dtv.tv_usec / 1000;
+}
 
 int print_reb(char arr[ARR_MAX][ARR_MAX], int line, int ver)
 {
@@ -54,21 +72,24 @@ int matrix(char arr[ARR_MAX][ARR_MAX], int line, int ver)
     return 0;
 }
 
-int del(char arr[ARR_MAX][ARR_MAX], int line, int ver)
+int put_edges(char arr[ARR_MAX][ARR_MAX], int line, int ver)
 {
     int ver1 = 0, ver2 = 0;
     puts("print the vertices between which you need to remove the edge:");
-    puts("first:");
-    scanf("%d", &ver1);
-    puts("second:");
-    scanf("%d", &ver2);
+    puts("first:"); scanf("%d", &ver1);
+    puts("second:"); scanf("%d", &ver2);
     getc(stdin);
-    for (int i = 0; i < ver; i++)
-        if (arr[ver1][i] == '1' && arr[ver2][i] == '1')
-        {
-            arr[ver1][i] = '0';
-            arr[ver2][i] = '0';
-        }
+    time_start();
+    for (int i = 0; i < ver; i++){
+        if (arr[ver1][i] == '0'){
+            arr[ver1][i] = '1';
+            if (arr[ver2][i] == '0')             
+                arr[ver2][i] = '1';
+            break;
+        }          
+
+    }
+    printf("Time of deleting: %ld mc\n", time_stop());
     select_motion(arr, line, ver);
     return 0;
 }
@@ -130,7 +151,7 @@ int select_motion(char arr[ARR_MAX][ARR_MAX], int line, int ver){
     int j = 0;
     puts("Select motion:");
     puts("0 - exit");
-    puts("1 - delete edges");
+    puts("1 - put edges");
     puts("2 - show edges");
     puts("3 - show your matrix");
     puts("4 - draw your graf");
@@ -138,7 +159,7 @@ int select_motion(char arr[ARR_MAX][ARR_MAX], int line, int ver){
     switch (j)
     {
     case 1:
-        del(arr, line, ver);
+        put_edges(arr, line, ver);
         break;
     case 2:
         print_reb(arr, line, ver);
